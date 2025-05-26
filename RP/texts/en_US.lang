@@ -1,0 +1,9 @@
+pack.name=Custom Bows
+pack.description=
+
+item.weapon:template_bow=Template Bow
+
+entity.weapon:arrow.name=Arrow
+%entity.weapon:arrow.name=Arrow
+
+weapon:itemGroup.name.bow.name=Custom Bows

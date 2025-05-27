@@ -1,8 +1,5 @@
-import { EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, world } from "@minecraft/server";
+import { EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, system, world } from "@minecraft/server";
 world.sendMessage("Custom Bows loaded!");
-const bows = {
-    "weapon:template_bow": 10
-};
 world.afterEvents.itemReleaseUse.subscribe((data) => {
     const player = data.source;
     const equippable = player.getComponent(EntityEquippableComponent.componentId);
@@ -12,7 +9,14 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const item = mainhand.getItem();
     if (!item)
         return;
-    let damage = bows[item.typeId];
+    let damage = undefined;
+    for (const tag of item.getTags()) {
+        if (damage !== undefined)
+            continue;
+        if (!tag.startsWith("weapon:bow_damage:"))
+            continue;
+        damage = JSON.parse(tag.split(":")[2]);
+    }
     if (damage === undefined)
         return;
     const useDuration = ((6000 * 20) - data.useDuration) / 20;
@@ -20,7 +24,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
         return;
     const enchantable = item.getComponent(ItemEnchantableComponent.componentId);
     if (enchantable?.getEnchantment("power"))
-        damage = damage + ((damage / 4) * (enchantable.getEnchantment("power").level * 2));
+        damage = damage + Math.round((damage / 4) * (enchantable.getEnchantment("power").level + 1));
     if (player.getGameMode() !== GameMode.creative) {
         let foundArrow = false;
         for (const id in EquipmentSlot) {
@@ -65,7 +69,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const arrow = player.dimension.spawnEntity("weapon:arrow", { x: headLoc.x, y: 100, z: headLoc.z });
     if (enchantable?.getEnchantment("flame"))
         arrow.setOnFire(999999);
-    arrow.setDynamicProperty("damage", damage);
+    arrow.setDynamicProperty("damage", (damage * (useDuration > 1 ? 1 : useDuration)));
     arrow.teleport(headLoc);
     const comp = arrow.getComponent(EntityProjectileComponent.componentId);
     if (!comp)
@@ -85,7 +89,14 @@ world.afterEvents.itemStartUse.subscribe((data) => {
     const item = mainhand.getItem();
     if (!item)
         return;
-    const damage = bows[item.typeId];
+    let damage = undefined;
+    for (const tag of item.getTags()) {
+        if (damage !== undefined)
+            continue;
+        if (!tag.startsWith("weapon:bow_damage:"))
+            continue;
+        damage = JSON.parse(tag.split(":")[2]);
+    }
     if (damage === undefined)
         return;
     if (player.getGameMode() !== GameMode.creative) {
@@ -126,15 +137,47 @@ world.afterEvents.entityHurt.subscribe((data) => {
     if (!data.hurtEntity || !data.hurtEntity.isValid())
         return;
     const damage = projectile.getDynamicProperty("damage");
-    const vel = projectile.getVelocity();
-    const totalVel = Math.abs(vel.x) + Math.abs(vel.y) + Math.abs(vel.z);
     if (damage === undefined)
         return;
     const comp = data.hurtEntity.getComponent(EntityHealthComponent.componentId);
-    comp.setCurrentValue(comp.currentValue - ((data.damage * (damage - 1)) * ((totalVel > 9 ? 9 : totalVel) / 9)));
+    comp.setCurrentValue(comp.currentValue - ((data.damage * (damage - 1))));
     projectile.remove();
 });
-export function decreaseItemDurability(player, item, amount) {
+function* updateInventory(player) {
+    const inv = player.getComponent(EntityInventoryComponent.componentId)?.container;
+    if (!inv)
+        return;
+    for (let i = 0; i < inv.size; i++) {
+        const item = inv.getItem(i);
+        if (!item)
+            continue;
+        let damage = undefined;
+        for (const tag of item.getTags()) {
+            if (damage !== undefined)
+                continue;
+            if (!tag.startsWith("weapon:bow_damage:"))
+                continue;
+            damage = JSON.parse(tag.split(":")[2]);
+        }
+        if (damage === undefined)
+            continue;
+        const enchantable = item.getComponent(ItemEnchantableComponent.componentId);
+        if (enchantable?.getEnchantment("power"))
+            damage = damage + Math.round((damage / 4) * (enchantable.getEnchantment("power").level + 1));
+        if (item.getLore()[0] === `\n§r§9+${damage} Damage`)
+            continue;
+        item.setLore([`\n§r§9+${damage} Damage`]);
+        inv.setItem(i, item);
+    }
+}
+system.runInterval(() => {
+    for (const player of world.getAllPlayers()) {
+        if (!player || !player.isValid())
+            continue;
+        system.runJob(updateInventory(player));
+    }
+}, 5);
+function decreaseItemDurability(player, item, amount) {
     const gamemode = player.getGameMode();
     if (gamemode !== GameMode.survival && gamemode !== GameMode.adventure)
         return item;

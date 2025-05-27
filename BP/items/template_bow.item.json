@@ -22,6 +22,9 @@
             },
             "minecraft:durability": {
                 "max_durability": 384
+            },
+            "minecraft:tags": {
+                "tags": ["weapon:bow_damage:9"]
             }
         }
     }

@@ -1,0 +1,32 @@
+{
+    "format_version": "1.21.80",
+    "minecraft:item": {
+        "description": {
+            "identifier": "weapon:sacrifice_bow",
+            "menu_category": {
+                "category": "equipment",
+                "group": "weapon:itemGroup.name.bow",
+                "is_hidden_in_commands": false
+            }
+        },
+        "components": {
+            "minecraft:icon": "weapon:sacrifice_bow",
+            "minecraft:use_modifiers": {
+                "movement_modifier": 0.34,
+                "use_duration": 6000
+            },
+            "minecraft:use_animation": "none",
+            "minecraft:max_stack_size": 1,
+            "minecraft:enchantable": {
+                "slot": "bow",
+                "value": 15
+            },
+            "minecraft:durability": {
+                "max_durability": 384
+            },
+            "minecraft:tags": {
+                "tags": ["weapon:bow_damage:16"]
+            }
+        }
+    }
+}

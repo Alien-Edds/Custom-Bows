@@ -2,10 +2,6 @@ import { Enchantment, EntityEquippableComponent, EntityHealthComponent, EntityIn
 
 world.sendMessage("Custom Bows loaded!")
 
-const bows: { [id: string]: number } = {
-    "weapon:template_bow": 10
-}
-
 world.afterEvents.itemReleaseUse.subscribe((data) => {
     const player = data.source
     const equippable = player.getComponent(EntityEquippableComponent.componentId) as EntityEquippableComponent | undefined
@@ -13,12 +9,17 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const mainhand = equippable.getEquipmentSlot(EquipmentSlot.Mainhand)
     const item = mainhand.getItem()
     if (!item) return
-    let damage = bows[item.typeId]
+    let damage = undefined
+    for (const tag of item.getTags()) {
+        if (damage !== undefined) continue
+        if (!tag.startsWith("weapon:bow_damage:")) continue
+        damage = JSON.parse(tag.split(":")[2]) as number
+    }
     if (damage === undefined) return
     const useDuration = ((6000 * 20) - data.useDuration) / 20
     if (useDuration < 0.17) return
     const enchantable = item.getComponent(ItemEnchantableComponent.componentId) as ItemEnchantableComponent | undefined
-    if (enchantable?.getEnchantment("power")) damage = damage + ((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level * 2))
+    if (enchantable?.getEnchantment("power")) damage = damage + Math.round((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level + 1))
     if (player.getGameMode() !== GameMode.creative) {
         let foundArrow = false
         for (const id in EquipmentSlot) {
@@ -50,16 +51,16 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     }
     mainhand.setItem(decreaseItemDurability(player, item, 1))
     const headLoc = player.getHeadLocation()
-    const arrow = player.dimension.spawnEntity("weapon:arrow", {x: headLoc.x, y: 100, z: headLoc.z})
+    const arrow = player.dimension.spawnEntity("weapon:arrow", { x: headLoc.x, y: 100, z: headLoc.z })
     if (enchantable?.getEnchantment("flame")) arrow.setOnFire(999999)
-    arrow.setDynamicProperty("damage", damage)
+    arrow.setDynamicProperty("damage", (damage * (useDuration > 1 ? 1 : useDuration)))
     arrow.teleport(headLoc)
     const comp = arrow.getComponent(EntityProjectileComponent.componentId) as EntityProjectileComponent | undefined
     if (!comp) return
     comp.owner = player
     const viewDir = player.getViewDirection()
     const vel = 4.8 * (useDuration > 1 ? 1 : useDuration)
-    comp.shoot({x: viewDir.x * vel, y: viewDir.y * vel, z: viewDir.z * vel})
+    comp.shoot({ x: viewDir.x * vel, y: viewDir.y * vel, z: viewDir.z * vel })
     player.dimension.playSound("random.bow", headLoc)
 })
 
@@ -70,7 +71,12 @@ world.afterEvents.itemStartUse.subscribe((data) => {
     const mainhand = equippable.getEquipmentSlot(EquipmentSlot.Mainhand)
     const item = mainhand.getItem()
     if (!item) return
-    const damage = bows[item.typeId]
+    let damage = undefined
+    for (const tag of item.getTags()) {
+        if (damage !== undefined) continue
+        if (!tag.startsWith("weapon:bow_damage:")) continue
+        damage = JSON.parse(tag.split(":")[2]) as number
+    }
     if (damage === undefined) return
     if (player.getGameMode() !== GameMode.creative) {
         let foundArrow = false
@@ -93,7 +99,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
         }
         if (!foundArrow) return
     }
-    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.weapon.player.bow.left_item" : "animation.weapon.player.bow", {stopExpression: "!q.is_using_item"})
+    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.weapon.player.bow.left_item" : "animation.weapon.player.bow", { stopExpression: "!q.is_using_item" })
 })
 
 world.afterEvents.entityHurt.subscribe((data) => {
@@ -102,15 +108,41 @@ world.afterEvents.entityHurt.subscribe((data) => {
     if (projectile?.typeId != "weapon:arrow") return
     if (!data.hurtEntity || !data.hurtEntity.isValid()) return
     const damage = projectile.getDynamicProperty("damage") as number | undefined
-    const vel = projectile.getVelocity()
-    const totalVel = Math.abs(vel.x) + Math.abs(vel.y) + Math.abs(vel.z)
     if (damage === undefined) return
     const comp = data.hurtEntity.getComponent(EntityHealthComponent.componentId) as EntityHealthComponent
-    comp.setCurrentValue(comp.currentValue - ((data.damage * (damage - 1)) * ((totalVel > 9 ? 9 : totalVel) / 9)))
+    comp.setCurrentValue(comp.currentValue - ((data.damage * (damage - 1))))
     projectile.remove()
 })
 
-export function decreaseItemDurability(player: Player, item: ItemStack, amount: number): ItemStack | undefined {
+function* updateInventory(player: Player) {
+    const inv = (player.getComponent(EntityInventoryComponent.componentId) as EntityInventoryComponent | undefined)?.container
+    if (!inv) return
+    for (let i = 0; i < inv.size; i++) {
+        const item = inv.getItem(i)
+        if (!item) continue
+        let damage = undefined
+        for (const tag of item.getTags()) {
+            if (damage !== undefined) continue
+            if (!tag.startsWith("weapon:bow_damage:")) continue
+            damage = JSON.parse(tag.split(":")[2]) as number
+        }
+        if (damage === undefined) continue
+        const enchantable = item.getComponent(ItemEnchantableComponent.componentId) as ItemEnchantableComponent | undefined
+        if (enchantable?.getEnchantment("power")) damage = damage + Math.round((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level + 1))
+        if (item.getLore()[0] === `\n§r§9+${damage} Damage`) continue
+        item.setLore([`\n§r§9+${damage} Damage`])
+        inv.setItem(i, item)
+    }
+}
+
+system.runInterval(() => {
+    for (const player of world.getAllPlayers()) {
+        if (!player || !player.isValid()) continue
+        system.runJob(updateInventory(player))
+    }
+}, 5)
+
+function decreaseItemDurability(player: Player, item: ItemStack, amount: number): ItemStack | undefined {
     const gamemode = player.getGameMode()
     if (gamemode !== GameMode.survival && gamemode !== GameMode.adventure) return item
     const comp = item.getComponent(ItemDurabilityComponent.componentId) as ItemDurabilityComponent | undefined

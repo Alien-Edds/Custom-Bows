@@ -1,34 +1,7 @@
-pack.name=Custom Bows
-pack.description=A commission pack for treysundown! Made by Alien Edds
+pack.name=Custom Bow Template
+pack.description=A custom bow template pack! Made by Alien Edds
 
-item.weapon:template_bow=Template Bow
-item.weapon:wooden_bow=Wooden Bow
-item.weapon:curved_wooden_bow=Curved Wooden Bow
-item.weapon:bronze_bow=Bronze Bow
-item.weapon:iron_bow=Iron Bow
-item.weapon:iron_longbow=Iron Longbow
-item.weapon:english_longbow=English Longbow
-item.weapon:steel_bow=Steel Bow
-item.weapon:short_bow=Short Bow
-item.weapon:silver_bow=Silver Bow
-item.weapon:steel_long_warbow=Steel Long Warbow
-item.weapon:reinforced_longbow=Reinforced Longbow
-item.weapon:small_warbow=Small Warbow
-item.weapon:stahlram_bow=Stahlram Bow
-item.weapon:orcish_bow=Orcish Bow
-item.weapon:root_longbow=Root Longbow
-item.weapon:chinese_decorated_bow=Chinese Decorated Bow
-item.weapon:windforce_bow=Windforce Bow
-item.weapon:elven_bow=Elven Bow
-item.weapon:bone_bow=Bone Bow
-item.weapon:xenthium_bow=Xenthium Bow
-item.weapon:dark_bow=Dark Bow
-item.weapon:sacrifice_bow=Bow of Sacrifice
-item.weapon:crimson_bow=Crimson Bow
-item.weapon:demonic_embrace_bow=Demonic Embrace Bow
-item.weapon:dragon_bow=Dragon Bow
+item.custom_bow:template_bow=Template Bow
 
-entity.weapon:arrow.name=Arrow
-%entity.weapon:arrow.name=Arrow
-
-weapon:itemGroup.name.bow=Custom Bows
+entity.custom_bow:arrow.name=Arrow
+%entity.custom_bow:arrow.name=Arrow

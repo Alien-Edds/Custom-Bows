@@ -1,7 +1,7 @@
 {
     "format_version": "1.10.0",
     "render_controllers": {
-        "controller.render.weapon.bow": {
+        "controller.render.custom_bow.bow": {
             "geometry": "Geometry.default",
             "arrays": {
                 "textures": {

@@ -12,7 +12,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     let damage = undefined
     for (const tag of item.getTags()) {
         if (damage !== undefined) continue
-        if (!tag.startsWith("weapon:bow_damage:")) continue
+        if (!tag.startsWith("custom_bow:bow_damage:")) continue
         damage = JSON.parse(tag.split(":")[2]) as number
     }
     if (damage === undefined) return
@@ -51,7 +51,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     }
     mainhand.setItem(decreaseItemDurability(player, item, 1))
     const headLoc = player.getHeadLocation()
-    const arrow = player.dimension.spawnEntity("weapon:arrow", { x: headLoc.x, y: 100, z: headLoc.z })
+    const arrow = player.dimension.spawnEntity("custom_bow:arrow", { x: headLoc.x, y: 100, z: headLoc.z })
     if (enchantable?.getEnchantment("flame")) arrow.setOnFire(999999)
     arrow.setDynamicProperty("damage", (damage * (useDuration > 1 ? 1 : useDuration)))
     arrow.teleport(headLoc)
@@ -74,7 +74,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
     let damage = undefined
     for (const tag of item.getTags()) {
         if (damage !== undefined) continue
-        if (!tag.startsWith("weapon:bow_damage:")) continue
+        if (!tag.startsWith("custom_bow:bow_damage:")) continue
         damage = JSON.parse(tag.split(":")[2]) as number
     }
     if (damage === undefined) return
@@ -99,13 +99,13 @@ world.afterEvents.itemStartUse.subscribe((data) => {
         }
         if (!foundArrow) return
     }
-    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.weapon.player.bow.left_item" : "animation.weapon.player.bow", { stopExpression: "!q.is_using_item" })
+    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.custom_bow.player.bow.left_item" : "animation.custom_bow.player.bow", { stopExpression: "!q.is_using_item" })
 })
 
 world.afterEvents.entityHurt.subscribe((data) => {
     const projectile = data.damageSource.damagingProjectile
     if (!projectile || !projectile.isValid()) return
-    if (projectile?.typeId != "weapon:arrow") return
+    if (projectile?.typeId != "custom_bow:arrow") return
     if (!data.hurtEntity || !data.hurtEntity.isValid()) return
     const damage = projectile.getDynamicProperty("damage") as number | undefined
     if (damage === undefined) return
@@ -123,7 +123,7 @@ function* updateInventory(player: Player) {
         let damage = undefined
         for (const tag of item.getTags()) {
             if (damage !== undefined) continue
-            if (!tag.startsWith("weapon:bow_damage:")) continue
+            if (!tag.startsWith("custom_bow:bow_damage:")) continue
             damage = JSON.parse(tag.split(":")[2]) as number
         }
         if (damage === undefined) continue

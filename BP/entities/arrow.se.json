@@ -2,7 +2,7 @@
   "format_version": "1.21.40",
   "minecraft:entity": {
     "description": {
-      "identifier": "weapon:arrow",
+      "identifier": "custom_bow:arrow",
       "is_spawnable": false,
       "is_summonable": true,
       "runtime_identifier": "arrow"

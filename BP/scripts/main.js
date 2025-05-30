@@ -13,7 +13,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     for (const tag of item.getTags()) {
         if (damage !== undefined)
             continue;
-        if (!tag.startsWith("weapon:bow_damage:"))
+        if (!tag.startsWith("custom_bow:bow_damage:"))
             continue;
         damage = JSON.parse(tag.split(":")[2]);
     }
@@ -66,7 +66,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     }
     mainhand.setItem(decreaseItemDurability(player, item, 1));
     const headLoc = player.getHeadLocation();
-    const arrow = player.dimension.spawnEntity("weapon:arrow", { x: headLoc.x, y: 100, z: headLoc.z });
+    const arrow = player.dimension.spawnEntity("custom_bow:arrow", { x: headLoc.x, y: 100, z: headLoc.z });
     if (enchantable?.getEnchantment("flame"))
         arrow.setOnFire(999999);
     arrow.setDynamicProperty("damage", (damage * (useDuration > 1 ? 1 : useDuration)));
@@ -93,7 +93,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
     for (const tag of item.getTags()) {
         if (damage !== undefined)
             continue;
-        if (!tag.startsWith("weapon:bow_damage:"))
+        if (!tag.startsWith("custom_bow:bow_damage:"))
             continue;
         damage = JSON.parse(tag.split(":")[2]);
     }
@@ -126,13 +126,13 @@ world.afterEvents.itemStartUse.subscribe((data) => {
         if (!foundArrow)
             return;
     }
-    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.weapon.player.bow.left_item" : "animation.weapon.player.bow", { stopExpression: "!q.is_using_item" });
+    player.playAnimation(equippable.getEquipmentSlot(EquipmentSlot.Offhand).getItem() ? "animation.custom_bow.player.bow.left_item" : "animation.custom_bow.player.bow", { stopExpression: "!q.is_using_item" });
 });
 world.afterEvents.entityHurt.subscribe((data) => {
     const projectile = data.damageSource.damagingProjectile;
     if (!projectile || !projectile.isValid())
         return;
-    if (projectile?.typeId != "weapon:arrow")
+    if (projectile?.typeId != "custom_bow:arrow")
         return;
     if (!data.hurtEntity || !data.hurtEntity.isValid())
         return;
@@ -155,7 +155,7 @@ function* updateInventory(player) {
         for (const tag of item.getTags()) {
             if (damage !== undefined)
                 continue;
-            if (!tag.startsWith("weapon:bow_damage:"))
+            if (!tag.startsWith("custom_bow:bow_damage:"))
                 continue;
             damage = JSON.parse(tag.split(":")[2]);
         }

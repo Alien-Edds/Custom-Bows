@@ -2,83 +2,8 @@
     "resource_pack_name": "Custom Bows",
     "texture_name": "atlas.items",
     "texture_data": {
-        "weapon:bow": {
-            "textures": "textures/weapon/items/bow/default/standby"
-        },
-        "weapon:wooden_bow": {
-            "textures": "textures/weapon/items/bow/wooden/standby"
-        },
-        "weapon:curved_wooden_bow": {
-            "textures": "textures/weapon/items/bow/curved_wooden/standby"
-        },
-        "weapon:bronze_bow": {
-            "textures": "textures/weapon/items/bow/bronze/standby"
-        },
-        "weapon:iron_bow": {
-            "textures": "textures/weapon/items/bow/iron/standby"
-        },
-        "weapon:iron_longbow": {
-            "textures": "textures/weapon/items/bow/iron_long/standby"
-        },
-        "weapon:english_longbow": {
-            "textures": "textures/weapon/items/bow/english_long/standby"
-        },
-        "weapon:steel_bow": {
-            "textures": "textures/weapon/items/bow/steel/standby"
-        },
-        "weapon:short_bow": {
-            "textures": "textures/weapon/items/bow/short/standby"
-        },
-        "weapon:silver_bow": {
-            "textures": "textures/weapon/items/bow/silver/standby"
-        },
-        "weapon:steel_long_warbow": {
-            "textures": "textures/weapon/items/bow/steel_long_war/standby"
-        },
-        "weapon:reinforced_longbow": {
-            "textures": "textures/weapon/items/bow/reinforced_long/standby"
-        },
-        "weapon:small_warbow": {
-            "textures": "textures/weapon/items/bow/small_war/standby"
-        },
-        "weapon:stahlram_bow": {
-            "textures": "textures/weapon/items/bow/stahlram/standby"
-        },
-        "weapon:orcish_bow": {
-            "textures": "textures/weapon/items/bow/orcish/standby"
-        },
-        "weapon:root_longbow": {
-            "textures": "textures/weapon/items/bow/root_long/standby"
-        },
-        "weapon:chinese_decorated_bow": {
-            "textures": "textures/weapon/items/bow/chinese_decorated/standby"
-        },
-        "weapon:windforce_bow": {
-            "textures": "textures/weapon/items/bow/windforce/standby"
-        },
-        "weapon:elven_bow": {
-            "textures": "textures/weapon/items/bow/elven/standby"
-        },
-        "weapon:bone_bow": {
-            "textures": "textures/weapon/items/bow/bone/standby"
-        },
-        "weapon:xenthium_bow": {
-            "textures": "textures/weapon/items/bow/xenthium/standby"
-        },
-        "weapon:dark_bow": {
-            "textures": "textures/weapon/items/bow/dark/standby"
-        },
-        "weapon:sacrifice_bow": {
-            "textures": "textures/weapon/items/bow/sacrifice/standby"
-        },
-        "weapon:crimson_bow": {
-            "textures": "textures/weapon/items/bow/crimson/standby"
-        },
-        "weapon:demonic_embrace_bow": {
-            "textures": "textures/weapon/items/bow/demonic_embrace/standby"
-        },
-        "weapon:dragon_bow": {
-            "textures": "textures/weapon/items/bow/dragon/standby"
+        "custom_bow:bow": {
+            "textures": "textures/custom_bow/items/bow/default/standby"
         }
     }
 }

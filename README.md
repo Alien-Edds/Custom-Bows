@@ -12,4 +12,4 @@ Special thanks to Trey (treysundown). He is the person that gave me this commiss
 
 As i said earlier, this pack was built off of a commission that i worked on for a day or 2.
 Without commissions, this template that i made would not exist(or atleast, not for a while).
-Commissions, MP work, and my personal addons are the only ways that i am making money at the moment, so thank you all for the support!
+Commissions, MP work, and my personal addons are the only ways that i am making money at the moment, so I thank you all for the support!
